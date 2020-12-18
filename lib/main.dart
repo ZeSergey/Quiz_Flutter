@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'question.dart';
-import 'answer.dart';
+import 'result.dart';
+import 'quiz.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,25 +13,49 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   num questionIndex = 0;
+  num totalScore = 0;
 
   var questions = [
     {
       "questionText": 'What\'s your favorite color?',
-      'answers': ['Black', 'Red', 'Blue', 'White']
+      'answers': [
+        {'text': 'Black', 'score': 7},
+        {'text': 'Red', 'score': 4},
+        {'text': 'Blue', 'score': 7},
+        {'text': 'White', 'score': 5}
+      ]
     },
     {
       "questionText": 'What\'s your favorite animal?',
-      'answers': ['Rabbit', 'Snake', 'Elephant', 'Lion']
+      'answers': [
+        {'text': 'Rabbit', 'score': 6},
+        {'text': 'Snake', 'score': 1},
+        {'text': 'Elephant', 'score': 2},
+        {'text': 'Lion', 'score': 7}
+      ]
     },
     {
       "questionText": 'Who\'s president of USA',
-      'answers': ['Donald', 'George', 'Bill', 'Barack']
+      'answers': [
+        {'text': 'Donald', 'score': 9},
+        {'text': 'George', 'score': 1},
+        {'text': 'Bill', 'score': 3},
+        {'text': 'Barack', 'score': 1}
+      ]
     },
   ];
 
-  void answerQuestion() {
+  void answerQuestion(int score) {
+    totalScore += score;
     setState(() {
       questionIndex = questionIndex + 1;
+    });
+  }
+
+  void restartQuiz() {
+    setState(() {
+      totalScore = 0;
+      questionIndex = 0;
     });
   }
 
@@ -44,14 +68,13 @@ class _MyAppState extends State<MyApp> {
             'Quiz App',
           ),
         ),
-        body: Column(
-          children: [
-            Question(questions[questionIndex]["questionText"]),
-            ...((questions[questionIndex]['answers'] as List).map((answer) {
-              return Answer(answerQuestion, answer);
-            })).toList()
-          ],
-        ),
+        body: questionIndex < questions.length
+            ? Quiz(
+                questionIndex: questionIndex,
+                questions: questions,
+                answerQuestion: answerQuestion,
+              )
+            : Result(totalScore, restartQuiz),
       ),
     );
   }
